@@ -1,0 +1,4 @@
+*.o
+*.so
+depend
+defines.make
