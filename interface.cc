@@ -2,10 +2,14 @@
   interface.cc
 
 	Copyright 2004-14 Tim Goetze <tim@quitte.de>
-	
+
 	http://quitte.de/dsp/
 
 	LADSPA descriptor factory, host interface.
+
+
+	2020-10 bitkeeper Created EqFA12p based on the EqFA4p
+	https://github.com/bitkeeper/caps
 
 */
 /*
@@ -25,7 +29,7 @@
 	02111-1307, USA or point your web browser to http://www.gnu.org.
 */
 /*
-	LADSPA ID ranges 1761 - 1800 and 2581 - 2660 
+	LADSPA ID ranges 1761 - 1800 and 2581 - 2660
 	(2541 - 2580 donated to artemio@kdemail.net)
 */
 
@@ -47,24 +51,24 @@
 #include "Amp.h"
 #include "Pan.h"
 #include "Scape.h"
-#include "ToneStack.h" 
-#include "Noisegate.h" 
+#include "ToneStack.h"
+#include "Noisegate.h"
 #ifdef SUMMER
 #include "AmpVI.h"
 #endif
 
 #include "Descriptor.h"
 
-#define N 36 
+#define N 36
 
 static DescriptorStub * descriptors[N+1];
 
 extern "C" {
 
-const LADSPA_Descriptor * 
+const LADSPA_Descriptor *
 ladspa_descriptor (unsigned long i) { return i < N ? descriptors[i] : 0; }
 
-__attribute__ ((constructor)) 
+__attribute__ ((constructor))
 void caps_so_init()
 {
 	DescriptorStub ** d = descriptors;
@@ -106,6 +110,7 @@ void caps_so_init()
 	*d++ = new Descriptor<Eq10X2>(2594);
 	*d++ = new Descriptor<Eq4p>(2608);
 	*d++ = new Descriptor<EqFA4p>(2609);
+	*d++ = new Descriptor<EqFA12p>(2611);
 
 	*d++ = new Descriptor<Wider>(1788);
 	*d++ = new Descriptor<Narrower>(2595);
@@ -116,11 +121,11 @@ void caps_so_init()
 
 	*d++ = new Descriptor<Click>(1769);
 	*d++ = new Descriptor<CEO>(1770);
-	
+
 	assert (d - descriptors <= N);
 }
 
-__attribute__ ((destructor)) 
+__attribute__ ((destructor))
 void caps_so_fini()
 {
 	DescriptorStub ** d = descriptors;

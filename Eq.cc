@@ -1,11 +1,14 @@
 /*
 	Eq.cc
-	
+
 	Copyright 2002-14 Tim Goetze <tim@quitte.de>
-	
+
 	http://quitte.de/dsp/
 
 	Various equaliser plugins.
+
+	2020-10 bitkeeper Created EqFA12p based on the EqFA4p
+	https://github.com/bitkeeper/caps
 
 */
 /*
@@ -35,14 +38,14 @@
 
 /* slight adjustments to gain to keep response optimally flat at
  * 0 dB gain in all bands */
-inline static double 
+inline static double
 adjust_gain(int i, double g)
 {
 	static float adjust[] = {
-		0.69238604707174034, 0.67282771124180096, 
-		0.67215187672467813, 0.65768648447259315, 
-		0.65988083755898952, 0.66359580101701909, 
-		0.66485139160960427, 0.65890297086039662, 
+		0.69238604707174034, 0.67282771124180096,
+		0.67215187672467813, 0.65768648447259315,
+		0.65988083755898952, 0.66359580101701909,
+		0.66485139160960427, 0.65890297086039662,
 		0.6493229390740376, 0.82305724539749325
 	};
 
@@ -54,7 +57,7 @@ adjust_gain(int i, double g)
 void
 Eq10::init()
 {
-	eq.init(fs, Eq10Q); 
+	eq.init(fs, Eq10Q);
 }
 
 void
@@ -109,18 +112,18 @@ Eq10::cycle(uint frames)
 PortInfo
 Eq10::port_info [] =
 {
-	{"31 Hz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"63 Hz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"125 Hz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}}, 
-	{"250 Hz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"500 Hz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"1 kHz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}}, 
-	{"2 kHz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"4 kHz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"8 kHz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}}, 
-	{"16 kHz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
+	{"31 Hz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"63 Hz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"125 Hz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}},
+	{"250 Hz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"500 Hz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"1 kHz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}},
+	{"2 kHz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"4 kHz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"8 kHz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}},
+	{"16 kHz", CTRL_IN, {DEFAULT_0, -48, 24}},
 
-	{"in", INPUT | AUDIO}, 
+	{"in", INPUT | AUDIO},
 	{"out", OUTPUT | AUDIO}
 };
 
@@ -174,7 +177,7 @@ Eq10X2::cycle(uint frames)
 		else
 		{
 			gain[i] = getport(i);
-			
+
 			/* prepare factor for logarithmic gain fade */
 			a = adjust_gain(i, db2lin(gain[i]));
 			a = pow(a / eq[0].gain[i], one_over_n);
@@ -186,7 +189,7 @@ Eq10X2::cycle(uint frames)
 
 	for(int c = 0; c < 2; ++c)
 	{
-		sample_t 
+		sample_t
 			* s = ports[10 + c],
 			* d = ports[12 + c];
 
@@ -209,20 +212,20 @@ Eq10X2::cycle(uint frames)
 PortInfo
 Eq10X2::port_info [] =
 {
-	{"31 Hz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"63 Hz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"125 Hz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}}, 
-	{"250 Hz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"500 Hz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"1 kHz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}}, 
-	{"2 kHz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"4 kHz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
-	{"8 kHz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}}, 
-	{"16 kHz", CTRL_IN, {DEFAULT_0, -48, 24}}, 
+	{"31 Hz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"63 Hz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"125 Hz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}},
+	{"250 Hz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"500 Hz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"1 kHz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}},
+	{"2 kHz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"4 kHz", CTRL_IN, {DEFAULT_0, -48, 24}},
+	{"8 kHz", CTRL_IN | GROUP, {DEFAULT_0, -48, 24}},
+	{"16 kHz", CTRL_IN, {DEFAULT_0, -48, 24}},
 
-	{"in.l", INPUT | AUDIO}, 
-	{"in.r", INPUT | AUDIO}, 
-	{"out.l", OUTPUT | AUDIO}, 
+	{"in.l", INPUT | AUDIO},
+	{"in.r", INPUT | AUDIO},
+	{"out.l", OUTPUT | AUDIO},
 	{"out.r", OUTPUT | AUDIO}
 };
 
@@ -240,7 +243,7 @@ void
 Eq4p::init()
 {
 	/* limit filter frequency to slightly under Nyquist to be on the safe side */
-	float limit = .48*fs; 
+	float limit = .48*fs;
 	for(int i = 0; i < 4; ++i)
 	{
 		state[i].f = -1; /* ensure all coefficients updated */
@@ -271,7 +274,7 @@ Eq4p::updatestate()
 		sample_t Q = getport(i*4 + 2);
 		sample_t gain = getport(i*4 + 3);
 
-		if(mode==state[i].mode && gain==state[i].gain && f==state[i].f && Q==state[i].Q) 
+		if(mode==state[i].mode && gain==state[i].gain && f==state[i].f && Q==state[i].Q)
 			continue;
 
 		xfade = true;
@@ -281,7 +284,7 @@ Eq4p::updatestate()
 		state[i].f = f;
 		state[i].gain = gain;
 
-		IIR2_ab c; 
+		IIR2_ab c;
 
 		f *= over_fs;
 		/* Zoelzer shelve: H(s) = (A*s^2 + s*(sqrt(A)/Q) + 1) / (s^2 + s/Q + 1) */
@@ -308,7 +311,7 @@ Eq4p::cycle(uint frames)
 	sample_t * s = ports[17];
 	sample_t * d = ports[18];
 
-	updatestate(); 
+	updatestate();
 
 	if(!xfade)
 	{
@@ -332,7 +335,7 @@ Eq4p::cycle(uint frames)
 			x = g0*g0*filter[0].seriesprocess(x) + g1*g1*filter[1].seriesprocess(x);
 			d[i] = x;
 		}
-		
+
 		filter[0] = filter[1];
 		filter[1].reset();
 		xfade = false;
@@ -373,7 +376,7 @@ Eq4p::port_info [] =
 	{"_latency", OUTPUT|CONTROL|GROUP, {INTEGER|DEFAULT_MAX,3,3}, "{3:'3 samples'}"},
 
 	/* 17 */
-	{"in", INPUT | AUDIO, {0, -1, 1}}, 
+	{"in", INPUT | AUDIO, {0, -1, 1}},
 	{"out", OUTPUT | AUDIO, {0}}
 };
 
@@ -391,7 +394,7 @@ void
 EqFA4p::init()
 {
 	/* limit filter frequency to slightly under Nyquist to be on the safe side */
-	float limit = .48*fs; 
+	float limit = .48*fs;
 	for(int i = 0; i < 4; ++i)
 	{
 		state[i].f = -1; /* ensure all coefficients updated */
@@ -421,7 +424,7 @@ EqFA4p::updatestate()
 		sample_t bw = getport(i*4 + 2);
 		sample_t gain = getport(i*4 + 3);
 
-		if(mode==state[i].mode && gain==state[i].gain && f==state[i].f && bw==state[i].bw) 
+		if(mode==state[i].mode && gain==state[i].gain && f==state[i].f && bw==state[i].bw)
 			continue;
 
 		xfade = true;
@@ -441,7 +444,7 @@ EqFA4p::updatestate()
 void
 EqFA4p::cycle(uint frames)
 {
-	updatestate(); 
+	updatestate();
 
 	sample_t g = db2lin(getport(16));
 	sample_t over_n = frames ? 1./frames : 1;
@@ -476,7 +479,7 @@ EqFA4p::cycle(uint frames)
 			gain *= gf;
 			d[i] = x;
 		}
-		
+
 		filter[0] = filter[1];
 		filter[1].reset();
 		xfade = false;
@@ -520,7 +523,7 @@ EqFA4p::port_info [] =
 	{"_latency", OUTPUT|CONTROL|GROUP, {INTEGER|DEFAULT_MAX,3,3}, "{3:'3 samples'}"},
 
 	/* 18 */
-	{"in", INPUT | AUDIO}, 
+	{"in", INPUT | AUDIO},
 	{"out", OUTPUT | AUDIO}
 };
 
@@ -532,4 +535,232 @@ Descriptor<EqFA4p>::setup()
 	autogen();
 }
 
+/* //////////////////////////////////////////////////////////////////////// */
+#define EQFA12P_GAIN_PORT 48 //16
+#define EQFA12P_LATENCY_PORT 49 //17
+#define EQFA12P_INPUT_PORT 50 //18
+#define EQFA12P_OUTPUT_PORT 51 // 19
 
+void
+EqFA12p::init()
+{
+	this->NR_OF_BANDS =EQFA12P_NR_OF_BANDS;
+
+	/* limit filter frequency to slightly under Nyquist to be on the safe side */
+	float limit = .48*fs;
+	for(int i = 0; i < NR_OF_BANDS; ++i)
+	{
+		state[i].f = -1; /* ensure all coefficients updated */
+		ranges[NR_OF_BANDS*i + 1].UpperBound = min(ranges[NR_OF_BANDS*i + 1].UpperBound, limit);
+	}
+}
+
+void
+EqFA12p::activate()
+{
+	filter[0].reset();
+	filter[1].reset();
+	filter[2].reset();
+	filter[3].reset();
+	filter[4].reset();
+	filter[5].reset();
+
+	updatestate();
+	filter[0] = filter[1];
+	filter[2] = filter[3];
+	filter[4] = filter[5];
+	xfade = false;
+	gain = db2lin(getport(EQFA12P_GAIN_PORT)); /* was 16 (gain) */
+}
+
+void
+EqFA12p::updatestate()
+{
+	size_t filter_instance, index;
+	for(int i=0; i<NR_OF_BANDS; ++i)
+	{
+		sample_t mode = getport(i*4 + 0);
+		sample_t f = getport(i*4 + 1);
+		sample_t bw = getport(i*4 + 2);
+		sample_t gain = getport(i*4 + 3);
+
+		if(mode==state[i].mode && gain==state[i].gain && f==state[i].f && bw==state[i].bw)
+			continue;
+
+		xfade = true;
+
+		state[i].mode = mode;
+		state[i].bw = bw;
+		state[i].f = f;
+		state[i].gain = gain;
+
+		index = i % 4;
+		if(i >=8) {
+			filter_instance = 5;
+		}else if(i >=4) {
+			filter_instance = 3;
+		}else {
+			filter_instance = 1;
+		}
+
+		if(!mode)
+			filter[filter_instance].unity(index);
+		else
+			filter[filter_instance].set(index, f*over_fs, bw, db2lin(gain));
+	}
+}
+
+void
+EqFA12p::cycle(uint frames)
+{
+	updatestate();
+
+	sample_t g = db2lin(getport(EQFA12P_GAIN_PORT));
+	sample_t over_n = frames ? 1./frames : 1;
+	sample_t gf = pow(g/gain, over_n);
+
+	*ports[EQFA12P_LATENCY_PORT] =  0;
+	sample_t * s = ports[EQFA12P_INPUT_PORT];
+	sample_t * d = ports[EQFA12P_OUTPUT_PORT];
+
+	if(!xfade)
+	{
+		for(uint i = 0; i < frames; ++i)
+		{
+			sample_t x = s[i];
+			x = filter[0].seriesprocess(x);
+			x = filter[2].seriesprocess(x);
+			x = filter[4].seriesprocess(x);
+			x = gain*x;
+			gain *= gf;
+			d[i] = x;
+		}
+	}
+	else
+	{
+		DSP::Sine gf0 (.5*M_PI*over_n,.5*M_PI);
+		DSP::Sine gf1 (.5*M_PI*over_n,0);
+		for(uint i = 0; i < frames; ++i)
+		{
+			sample_t x = s[i];
+			sample_t g0 = gf0.get();
+			sample_t g1 = gf1.get();
+			x = g0*g0*filter[0].seriesprocess(x) + g1*g1*filter[1].seriesprocess(x);
+			x = filter[2].seriesprocess(x) + filter[3].seriesprocess(x);
+			x = filter[4].seriesprocess(x) + filter[5].seriesprocess(x);
+			x = gain*x;
+			gain *= gf;
+			d[i] = x;
+		}
+
+		filter[0] = filter[1];
+		filter[1].reset();
+
+		filter[2] = filter[3];
+		filter[3].reset();
+
+		filter[4] = filter[5];
+		filter[5].reset();
+
+		xfade = false;
+	}
+}
+
+// /* //////////////////////////////////////////////////////////////////////// */
+
+PortInfo
+EqFA12p::port_info [] =
+{
+	{"a.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"a.f (Hz)", CTRL_IN, {DEFAULT_LOW | LOG, 20, 14000}},
+	{"a.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"a.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 4 */
+	{"b.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"b.f (Hz)", CTRL_IN, {DEFAULT_MID | LOG, 20, 14000}},
+	{"b.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"b.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 8 */
+	{"c.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"c.f (Hz)", CTRL_IN, {DEFAULT_MID | LOG, 20, 14000}},
+	{"c.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"c.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 12 */
+	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+	//-----------------
+
+	/* 16 */
+	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 20 */
+	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 24 */
+	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 28 */
+	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 32 */
+	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 36 */
+	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 40 */
+	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+	/* 44 */
+	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
+
+
+	//-----------------
+
+	/* 48  was 16 */
+	{"gain", CTRL_IN|GROUP, {DEFAULT_0, -24, 24}},
+
+	/* 49 was 17 */
+	{"_latency", OUTPUT|CONTROL|GROUP, {INTEGER|DEFAULT_MAX,9,9}, "{9:'9 samples'}"},
+
+	/* 50 was 18 */
+	{"in", INPUT | AUDIO},
+	{"out", OUTPUT | AUDIO}
+};
+
+template <> void
+Descriptor<EqFA12p>::setup()
+{
+	Label = "EqFA12p";
+	Name = CAPS "EqFA12p - 12-band parametric eq";
+	autogen();
+}

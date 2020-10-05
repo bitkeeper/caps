@@ -1,11 +1,14 @@
 /*
 	Eq.h
-	
+
 	Copyright 2004-13 Tim Goetze <tim@quitte.de>
-	
+
 	http://quitte.de/dsp/
 
 	IIR equalisation filters.
+
+	2020-10 bitkeeper Created EqFA12p based on the EqFA4p
+	https://github.com/bitkeeper/caps
 
 */
 /*
@@ -113,5 +116,31 @@ class EqFA4p
 		void init();
 		void activate();
 };
+
+
+#define EQFA12P_NR_OF_BANDS 12
+/* 3x 4-way parametric, parallel implementation */
+class EqFA12p
+: public Plugin
+{
+	public:
+	    int NR_OF_BANDS;
+		struct {sample_t mode,gain,f,bw;} state[EQFA12P_NR_OF_BANDS]; /* parameters */
+
+		DSP::MREqv4 filter[6];
+
+		bool xfade;
+		void updatestate();
+		sample_t gain;
+
+		void cycle (uint frames);
+
+	public:
+		static PortInfo port_info [];
+
+		void init();
+		void activate();
+};
+
 
 #endif /* EQ_H */

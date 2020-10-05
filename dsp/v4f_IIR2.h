@@ -1,11 +1,14 @@
 /*
 	dsp/v4f_IIR2.h
-	
+
 	Copyright 2003-14 Tim Goetze <tim@quitte.de>
-	
+
 	http://quitte.de/dsp/
 
-	2nd-order IIR filters, SIMD 
+	2nd-order IIR filters, SIMD
+
+	2020-10 bitkeeper Created EqFA10p based on the EqFA4p
+	https://github.com/bitkeeper/caps
 
 */
 /*
@@ -40,7 +43,7 @@ class RBJv4
 {
 	public:
 		v4f_t sin, cos, alpha;
-		
+
 		RBJv4 (v4f_t f, v4f_t Q)
 			{
 				v4f_t w = v4f_2pi * f;
@@ -70,7 +73,7 @@ class IIR2v4
 				unity();
 				reset();
 			}
-		
+
 		/* needed to make sure copy has properly aligned storage */
 		void operator = (IIR2v4 & b)
 			{
@@ -89,7 +92,7 @@ class IIR2v4
 		void dumpab()
 			{
 				v4f_t *a = data();
-				
+
 				msg(), "a0 = ", a[0];
 				msg(), "a1 = ", a[1];
 				msg(), "a2 = ", a[2];
@@ -101,7 +104,7 @@ class IIR2v4
 		void reset()
 			{
 				v4f_t *x = data() + 5, *y = x + 2;
-				x[0] = x[1] = 
+				x[0] = x[1] =
 				y[0] = y[1] = (v4f_t) {0,0,0,0};
 			}
 
@@ -114,7 +117,7 @@ class IIR2v4
 				b[0] = Q * p.alpha;
 				b[1] = v4f_0;
 				b[2] = -b[0];
-				
+
 				a[0] = v4f_1 + p.alpha;
 				a[1] = -v4f_2 * p.cos;
 				a[2] = v4f_1 - p.alpha;
@@ -129,7 +132,7 @@ class IIR2v4
 
 				b[1] = v4f_1 - p.cos;
 				b[0] = b[2] = b[1] * v4f_half;
-				
+
 				a[0] = v4f_1 + p.alpha;
 				a[1] = -v4f_2 * p.cos;
 				a[2] = v4f_1 - p.alpha;
@@ -158,7 +161,7 @@ class IIR2v4
 
 				a[0] = v4f_1 + aoA;
 				a[2] = v4f_1 - aoA;
-			
+
 				make_direct_I (a, b);
 			}
 
@@ -167,7 +170,7 @@ class IIR2v4
 				v4f_t *a = data(), *b = a + 2;
 
 				v4f_t ha0i = v4f_1 / ha[0];
-				
+
 				a[0] = hb[0] * ha0i;
 				a[1] = hb[1] * ha0i;
 				a[2] = hb[2] * ha0i;
@@ -183,7 +186,7 @@ class IIR2v4
 				v4f_t *a = data(), *b = a + 2, *x = a + 5, *y = a + 7;
 
 				register v4f_t r = s * a[0];
-				
+
 				r += a[1] * x[h];
 				r += b[1] * y[h];
 
@@ -193,7 +196,7 @@ class IIR2v4
 
 				y[h] = r;
 				x[h] = s;
-				
+
 				return r;
 			}
 
@@ -203,7 +206,7 @@ class IIR2v4
 				v4f_t *a = data();
 
 				register v4f_t r = s * a[0];
-				
+
 				r += a[1] * a[5+h]; /* a[1] * x[h] */
 				r += a[2+1] * a[7+h]; /* b[1] * y[h] */
 
@@ -213,7 +216,7 @@ class IIR2v4
 
 				a[5+h] = s; /* x[h] = s */
 				a[7+h] = r; /* y[h] = r */
-				
+
 				return r;
 			}
 
@@ -224,7 +227,7 @@ class IIR2v4
 				v4f_t *a = data();
 
 				register v4f_t r = s * a[0];
-				
+
 				r += a[2+1] * a[7+h]; /* b[1] * y[h] */
 
 				h ^= 1;
@@ -233,17 +236,17 @@ class IIR2v4
 
 				a[5+h] = s; /* x[h] = s */
 				a[7+h] = r; /* y[h] = r */
-				
+
 				return r;
 			}
 
-		/* using the parallel structure as four filters in series by 
+		/* using the parallel structure as four filters in series by
 		 * sequential rotation */
 		inline float seriesprocess (float x)
 			{
 				v4f_t *a = data();
 				v4f_t s = a[7+h]; /* y[-1] = last output */
-				s = v4f_shuffle (s, 0,0,1,2); /* keep first sample -> no-op on non-SSE chips */ 
+				s = v4f_shuffle (s, 0,0,1,2); /* keep first sample -> no-op on non-SSE chips */
 				v4fa(s)[0] = x;
 				s = process(s);
 				return v4fa(s)[3];
@@ -268,7 +271,7 @@ class IIR2v4Bank
 {
 	public:
 		enum { DataSize = (2 + 7*N) * sizeof (v4f_t) };
-		/* data layout: x[2] first, then N * (a[3], b[2], y[2]) 
+		/* data layout: x[2] first, then N * (a[3], b[2], y[2])
 		 * plus 16 extra bytes to ensure sufficient room for alignment */
 		char __data [DataSize + sizeof (v4f_t)];
 		v4f_t * _data;
@@ -305,7 +308,7 @@ class IIR2v4Bank
 		void dumpab()
 			{
 				v4f_t *a = data() + 2;
-				
+
 				for (uint i = 0; i < N; ++i, a += 7)
 				{
 					msg(), "a0[", i, "] = ", a[0];
@@ -319,7 +322,7 @@ class IIR2v4Bank
 
 		inline v4f_t process (v4f_t s, uint n = N)
 			{
-				v4f_t *x = data(), *a = x + 2; 
+				v4f_t *x = data(), *a = x + 2;
 
 				v4f_t acc = v4f_0;
 
@@ -327,7 +330,7 @@ class IIR2v4Bank
 				for (uint i = 0; i < n; ++i, a += 7)
 				{
 					register v4f_t r = s * a[0];
-					
+
 					r +=   a[1] * x[h1];
 					r += a[2+1] * a[5+h1]; /* b[1] * y[h1] */
 
@@ -346,7 +349,7 @@ class IIR2v4Bank
 
 		inline v4f_t process_no_a0 (v4f_t s)
 			{
-				v4f_t *x = data(), *a = x + 2; 
+				v4f_t *x = data(), *a = x + 2;
 
 				v4f_t acc = v4f_0;
 
@@ -354,7 +357,7 @@ class IIR2v4Bank
 				for (uint i = 0; i < N; ++i, a += 7)
 				{
 					register v4f_t r;
-					
+
 					r =    a[1] * x[h1];
 					r += a[2+1] * a[5+h1]; /* b[1] * y[h1] */
 
@@ -373,7 +376,7 @@ class IIR2v4Bank
 
 		inline v4f_t process_bp (v4f_t s, uint n = N)
 			{
-				v4f_t *x = data(), *a = x + 2; 
+				v4f_t *x = data(), *a = x + 2;
 
 				v4f_t acc = v4f_0;
 
@@ -381,7 +384,7 @@ class IIR2v4Bank
 				for (uint i = 0; i < n; ++i, a += 7)
 				{
 					register v4f_t r = s * a[0];
-					
+
 					r += a[2+1] * a[5+h1]; /* b[1] * y[h1] */
 
 					r += a[2] * x[h2];
@@ -401,7 +404,7 @@ class IIR2v4Bank
 		/* RBJ prototypes */
 		void set_bp (v4f_t * f, v4f_t * Q, v4f_t * gain = 0)
 			{
-				v4f_t * a = data() + 2; 
+				v4f_t * a = data() + 2;
 				for (uint i = 0; i < N; ++i, a += 7)
 				{
 					RBJv4 p (f[i], Q[i]);
@@ -410,7 +413,7 @@ class IIR2v4Bank
 					hb[0] = Q[i] * p.alpha;
 					hb[1] = v4f_0;
 					hb[2] = -hb[0];
-					
+
 					ha[0] = v4f_1 + p.alpha;
 					ha[1] = -v4f_2 * p.cos;
 					ha[2] = v4f_1 - p.alpha;
@@ -423,7 +426,7 @@ class IIR2v4Bank
 
 		void set_eq (v4f_t *f, v4f_t *Q, v4f_t *gain)
 			{
-				v4f_t * a = data() + 2; 
+				v4f_t * a = data() + 2;
 				for (uint i = 0; i < N; ++i, a += 7)
 				{
 					/* A = pow (10, gain / 40) */
@@ -445,7 +448,7 @@ class IIR2v4Bank
 
 					ha[0] = v4f_1 + aoA;
 					ha[2] = v4f_1 - aoA;
-				
+
 					make_direct_I (a, ha, hb);
 				}
 			}
@@ -456,7 +459,7 @@ class IIR2v4Bank
 				v4f_t *b = a + 2;
 
 				v4f_t ha0i = v4f_1 / ha[0];
-				
+
 				a[0] = hb[0] * ha0i;
 				a[1] = hb[1] * ha0i;
 				a[2] = hb[2] * ha0i;
@@ -469,7 +472,7 @@ class IIR2v4Bank
 		void set_a (uint k, float *c, uint n = N)
 			{
 				//msg(), k, " = ", (v4f_t) {c[0],c[1],c[2],c[3]}, (v4f_t) {c[4],c[5],c[6],c[7]};
-				v4f_t * a = data() + 2 + k; 
+				v4f_t * a = data() + 2 + k;
 				for (uint i = 0; i < n; ++i, a += 7, c += 4)
 					*a = (v4f_t) {c[0],c[1],c[2],c[3]};
 			}
@@ -479,7 +482,7 @@ class IIR2v4Bank
 		/* initialise coefficients wholesale */
 		void set_ab (uint n, v4f_t *a0, v4f_t *a1, v4f_t *a2, v4f_t *b1, v4f_t *b2)
 			{
-				v4f_t * a = data() + 2; 
+				v4f_t * a = data() + 2;
 				for (uint i = 0; i < n; ++i, a += 7)
 				{
 					a[0] = a0[i];
@@ -564,7 +567,7 @@ class Resonator4fBank
 				r *= r;
 				a[2] = -r;
 			}
-	
+
 		void reset()
 			{
 				v4f_t *y = state + 3;
@@ -581,11 +584,11 @@ class Resonator4fBank
 
 		inline v4f_t process (int i, v4f_t x)
 			{
-				v4f_t *a = state + i*Item; 
+				v4f_t *a = state + i*Item;
 
 				register uint h2 = h1 ^ 1;
 				x = x * a[0]; /* x * a[0] */
-				
+
 				x += a[1] * a[3+h1]; /* b[1] * y[h1] */
 				x += a[2] * a[3+h2]; /* b[2] * y[h2] */
 
@@ -595,19 +598,19 @@ class Resonator4fBank
 
 		inline v4f_t y1(int i)
 			{
-				return *((v4f_t*) state + i*Item + 3 + h1); 
+				return *((v4f_t*) state + i*Item + 3 + h1);
 			}
 
 
 		inline v4f_t processplus (int i, sample_t x)
 			{
-				v4f_t *a = state + i*Item; 
+				v4f_t *a = state + i*Item;
 
 				v4f_t s = (v4f_t) {x,x,x,x};
 
 				register uint h2 = h1 ^ 1;
 				register v4f_t r = s * a[0]; /* x * a[0] */
-				
+
 				r += a[1] * a[3+h1]; /* b[1] * y[h1] */
 				r += a[2] * a[3+h2]; /* b[2] * y[h2] */
 
@@ -628,7 +631,7 @@ class Resonator4fBank
 		void dumpab()
 			{
 				v4f_t *a = state;
-				
+
 				for (int i = 0; i < N; ++i, a += Item)
 				{
 					msg(), "a0[", i, "] = ", a[0];
@@ -654,7 +657,7 @@ class MREqv4
 				unity();
 				reset();
 			}
-		
+
 		/* needed to make sure copy has properly aligned storage */
 		void operator = (MREqv4 & b)
 			{ memcpy (data(), b.data(), 9 * sizeof (v4f_t)); }
@@ -737,7 +740,7 @@ class MREqv4
 				c[3] = y;
 				return v4fa(x)[3];
 			}
-}; 
+};
 
 } /* namespace DSP */
 
