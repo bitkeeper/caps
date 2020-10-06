@@ -619,7 +619,7 @@ EqFA12p::cycle(uint frames)
 	sample_t over_n = frames ? 1./frames : 1;
 	sample_t gf = pow(g/gain, over_n);
 
-	*ports[EQFA12P_LATENCY_PORT] =  0;
+	*ports[EQFA12P_LATENCY_PORT] = 3;
 	sample_t * s = ports[EQFA12P_INPUT_PORT];
 	sample_t * d = ports[EQFA12P_OUTPUT_PORT];
 
@@ -750,7 +750,7 @@ EqFA12p::port_info [] =
 	{"gain", CTRL_IN|GROUP, {DEFAULT_0, -24, 24}},
 
 	/* 49 was 17 */
-	{"_latency", OUTPUT|CONTROL|GROUP, {INTEGER|DEFAULT_MAX,9,9}, "{9:'9 samples'}"},
+	{"_latency", OUTPUT|CONTROL|GROUP, {INTEGER|DEFAULT_MAX,3,3}, "{3:'3 samples'}"},
 
 	/* 50 was 18 */
 	{"in", INPUT | AUDIO},
