@@ -672,75 +672,75 @@ PortInfo
 EqFA12p::port_info [] =
 {
 	{"a.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"a.f (Hz)", CTRL_IN, {DEFAULT_LOW | LOG, 20, 14000}},
-	{"a.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"a.f (Hz)", CTRL_IN, {DEFAULT_LOW | LOG, 10, 18000}},
+	{"a.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"a.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 4 */
 	{"b.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"b.f (Hz)", CTRL_IN, {DEFAULT_MID | LOG, 20, 14000}},
-	{"b.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"b.f (Hz)", CTRL_IN, {DEFAULT_MID | LOG, 10, 18000}},
+	{"b.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"b.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 8 */
 	{"c.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"c.f (Hz)", CTRL_IN, {DEFAULT_MID | LOG, 20, 14000}},
-	{"c.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"c.f (Hz)", CTRL_IN, {DEFAULT_MID | LOG, 10, 18000}},
+	{"c.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"c.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 12 */
 	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
-	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 10, 18000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 	//-----------------
 
 	/* 16 */
 	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
-	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 10, 18000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 20 */
 	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
-	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 10, 18000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 24 */
 	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
-	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 10, 18000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 28 */
 	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
-	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 10, 18000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 32 */
 	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
-	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 10, 18000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 36 */
 	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
-	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 10, 18000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 40 */
 	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
-	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 10, 18000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 	/* 44 */
 	{"d.act", CTRL_IN | GROUP, {DEFAULT_0 | INTEGER, 0,1}, EqFA4pBandModes},
-	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 20, 14000}},
-	{"d.bw", CTRL_IN, {DEFAULT_1, .125, 8}},
+	{"d.f (Hz)", CTRL_IN, {DEFAULT_HIGH | LOG, 10, 18000}},
+	{"d.bw", CTRL_IN, {DEFAULT_1, .06, 16}},
 	{"d.gain (dB)", CTRL_IN, {DEFAULT_0, -24, 24}},
 
 
